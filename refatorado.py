@@ -84,14 +84,16 @@ CALCULATION_SPECS = {
     
    
     # Alimentação:
-    'gest_alim_centralizada': {'col': 'GEST_ALIM', 'text': 'Centralizada', 'tag': '<<GESTAO_ALIM_CENTRALIZADA>>'},
-    'gest_alim_descentralizada': {'col': 'GEST_ALIM', 'text': 'Descentralizada', 'tag': '<<GESTAO_ALIM_DESCENTRALIZADA>>'},
+    'gest_alim_centralizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Centralizada'], 'must_not_contain':['Descentralizada ou Escolarizada','Semi Descentralizada ou Parcialmente Escolarizada','Terceirizada']}, 'tag': '<<GESTAO_ALIM_CENTRALIZADA>>'},
+    'gest_alim_descentralizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Descentralizada ou Escolarizada'], 'must_not_contain':['Centralizada']}, 'tag':'<<GESTAO_ALIM_DESCENTRALIZADA>>'},
+    'gest_alim_semi_descentralizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Semi Descentralizada ou Parcialmente Escolarizada'], 'must_not_contain':['Centralizada','Descentralizada ou Escolarizada']}, 'tag':'<<GESTAO_ALIM_SEMIDESCENTRALIZADA>>'},
+    'gest_alim_terceirizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Terceirizada'], 'must_not_contain':['Centralizada','Descentralizada ou Escolarizada','Semi Descentralizada ou Parcialmente Escolarizada']}, 'tag':'<<GESTAO_ALIM_TERCEIRIZADA>>'},
+
 
     # TODO: resolver convergência
-    'tem_card_esp': {'col': 'CARD_ESP', 'text': 'Sim, havendo cardápio especial para esses alunos', 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_COM_CARDAPIO>>'},
-    'tem_card_esp_irr': {'col': 'CARD_ESP', 'text': 'Sim, mas não havendo cardápio especial para esses alunos', 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_SEM_CARDAPIO>>'},
-    'nao_card_esp': {'col': 'CARD_ESP', 'text': 'Não', 'tag': '<<CARDAPIO_NEEDS_NAO>>'},
-
+    'tem_card_esp': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Sim, havendo cardápio especial para esses alunos'], 'must_not_contain':['Sim, mas não havendo cardápio especial para esses alunos','Não']}, 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_COM_CARDAPIO>>'},
+    'sem_card_esp': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Sim, mas não havendo cardápio especial para esses alunos'], 'must_not_contain':['Sim, havendo cardápio especial para esses alunos','Não']}, 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_SEM_CARDAPIO>>'},
+    'card_esp_nao': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Não'], 'must_not_contain':['Sim, havendo cardápio especial para esses alunos','Sim, mas não havendo cardápio especial para esses alunos']}, 'tag': '<<CARDAPIO_NEEDS_NAO>>'},
 
     'ref_serv': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo SERVIDA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_SERVIDA>>'},
     'ref_prep': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo PREPARADA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_PREPARADA>>'},
@@ -279,7 +281,7 @@ def calcular_tags_para_municipio(
                     # Aplica as condições 'must_not_contain' (Lógica AND NOT)
                     for text_to_exclude in conditions.get('must_not_contain', []):
                         # O operador ~ inverte a máscara booleana (faz um NOT)
-                        base_mask &= ~df_municipio[col_norm].str.contains(_norm_noacc(text_to_exclude), na=False)
+                        base_mask &= ~df_municipio[col_norm].str.match(_norm_noacc(text_to_exclude), na=False)
                     
                     mask = base_mask
 
