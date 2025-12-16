@@ -75,6 +75,7 @@ CALCULATION_SPECS = {
 
     # Salas de Aula mult->multisseriada
     'mult_sim':{'col':'MULTS', 'text':'Sim', 'tag':'<<SALAS_MULTISSERIADAS>>'},
+    'sala_irr':{'col': 'SALA_IRR', 'op':'composite','conditions':{'must_not_contain':['Não foram identificados os aspectos irregulares listados acima']},'tag':'<<SALAS_IRREGULARES>>'},
 
     # Esgotamento
     'sist_conectado': {'col': 'ESGOTAMENTO', 'text': 'rede de esgotamento sanitário', 'tag': '<<ESGOTO_REDE_SANITARIA>>'},
@@ -126,6 +127,12 @@ CALCULATION_SPECS = {
     'card_nao_existe':{'col':'CARD', 'text':'Não', 'tag':'<<CARDAPIO_NAO_EXISTE>>'},
 
     #TODO: Irregularidades local de armazenamento dos alimentos
+    'armz_irr_prat_enf':{'col':'ARM_IRR', 'text':'Prateleira(s) ou armário(s) enferrujado(s)', 'tag':'<<ARMZ_LOCAL_IRREG_PRATELEIRA_ENFERRUJADA>>'},
+    'armz_irr_sup_inap':{'col':'ARM_IRR', 'text':'Alimentos empilhados sobre superfícies não apropriadas (ex: mesas, cadeiras, balcão)', 'tag':'<<ARMZ_LOCAL_IRREG_SUPERFICIE_INAPROPRIADA>>'},
+    'armz_irr_chao':{'col':'ARM_IRR', 'text':'Armazenamento de alimentos diretamente no chão', 'tag':'<<ARMZ_LOCAL_IRREG_DIRETO_NO_CHAO>>'},
+    'armz_irr_sem_ent_ar':{'col':'ARM_IRR', 'text':'Ambiente não possui entrada de ar', 'tag':'<<ARMZ_LOCAL_IRREG_SEM_ENTRADA_AR>>'},
+    'armz_irr_pres_anim':{'col':'ARM_IRR', 'text':'Presença de animais (tais como moscas, baratas, cupins, formigas) ou vestígios de sua existência (excrementos de aves, embalagens roídas etc)', 'tag':'<<ARMZ_LOCAL_IRREG_PRESENCA_ANIMAIS>>'},
+    'armz_irr_mat_limp':{'col':'ARM_IRR', 'text':'Armazenamento de materiais de limpeza e/ou outros materiais junto de alimentos', 'tag':'<<ARMZ_LOCAL_IRREG_MATERIAIS_LIMPEZA_JUNTO>>'},
     
 
     # ... etc
@@ -160,7 +167,6 @@ DYNAMIC_TAG_SPECS = {
     'REFEITORIO_INFRA':{'col':'IRR_REF','replacements':{"REFEITORIO_INFRA":"","ILUM":"ILUMINACAO","VENT":"VENTILACAO","OK":"NAO_FORAM","_":" "}},
     'RESERVATORIO':{'col':'RES_AGUA','replacements':{"RESERVATORIO":"","FUNC":"FUNCIONAMENTO","OK":"EM_FUNCIONAMENTO","_":" "}},
     'PCD_SAN_EXC_AGUA':{'col':'BAN_PCD_AG','replacements':{"PCD_SAN_EXC_AGUA":"","AGUA":"","_":" "}},
-
     'PCD_SAN_INFRA':{'col':'IRR_BAN_PCD','replacements':{"PCD_SAN_INFRA":"","AUS":"","NENHUMA_IRREG":"NAO_FORAM","_":" "}},
     # Adicionar outras lógicas dinâmicas aqui
     # O script ainda detecta LACTARIO_LOCAL? Vê se o _ interfere (interfere :p)
