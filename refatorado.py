@@ -43,6 +43,7 @@ CALCULATION_SPECS = {
     'fund_q': {'col': 'ETAPAS', 'text': 'Fundamental', 'tag': '<<ESCOLAS_FUND_VISITADAS>>'},
     'medio_q': {'col': 'ETAPAS', 'text': 'Ensino Médio', 'tag': '<<ESCOLAS_MED_VISITADAS>>'},
     'eja_q': {'col': 'ETAPAS', 'text': 'EJA', 'tag': '<<ESCOLAS_EJA_VISITADAS>>'},
+    'inf_fund_exclusivo': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Educação Infantil', 'Fundamental'], 'must_not_contain':['Ensino Médio']},'tag':'<<ESCOLAS_INF_FUND_VISITADAS>>'},
     
     # Irregularidades Entrada
     'sem_rampas': {'col': 'IRR_ENTRADA', 'text': 'Não há rampa de acesso', 'tag': '<<ESCOLAS_SEM_RAMPAS>>'},
@@ -66,16 +67,67 @@ CALCULATION_SPECS = {
     'cacimba_etc': {'col': 'ABS_AGUA', 'text': 'Cacimba/cisterna/poço', 'tag': '<<AGUA_CACIMBA_CISTERNA_POCO>>'},
     'fonte_etc': {'col': 'ABS_AGUA', 'text': 'Fonte/rio/igarapé', 'tag': '<<AGUA_FONTE_RIO_IGARAPE_RIACHO_CORREGO>>'},
     'sem_agua': {'col': 'ABS_AGUA', 'text': 'Não há', 'tag': '<<AGUA_NAO_HA>>'},
-    
+
+    # Energia elétrica en->energia
+    'en_sim_func':{'col':'ENERGIA', 'text':'Sim, em funcionamento', 'tag':'<<ENERGIA_SIM_FUNC>>'},
+    'en_sim_fora':{'col':'ENERGIA', 'text':'Sim, mas fora de funcionamento', 'tag':'<<ENERGIA_FORA_FUNC>>'},
+    'en_nao_ha':{'col':'ENERGIA', 'text':'Não', 'tag':'<<ENERGIA_NAO>>'},
+
+    # Salas de Aula mult->multisseriada
+    'mult_sim':{'col':'MULTS', 'text':'Sim', 'tag':'<<SALAS_MULTISSERIADAS>>'},
+
     # Esgotamento
     'sist_conectado': {'col': 'ESGOTAMENTO', 'text': 'rede de esgotamento sanitário', 'tag': '<<ESGOTO_REDE_SANITARIA>>'},
     'fossa_e_outros': {'col': 'ESGOTAMENTO', 'text': 'Fossa, sumidouro ou similar', 'tag': '<<ESGOTO_FOSSA_SUMIDOURO>>'},
     'despejo_inadequado': {'col': 'ESGOTAMENTO', 'text': 'Despejo sem destinação adequada', 'tag': '<<ESGOTO_DESPEJO_INADEQUADO>>'},
     
-    # E muitos outros... Adicionar todas as suas tags estáticas aqui.
-    # Exemplo para Gestão de Alimentação:
+   
+    # Alimentação:
     'gest_alim_centralizada': {'col': 'GEST_ALIM', 'text': 'Centralizada', 'tag': '<<GESTAO_ALIM_CENTRALIZADA>>'},
     'gest_alim_descentralizada': {'col': 'GEST_ALIM', 'text': 'Descentralizada', 'tag': '<<GESTAO_ALIM_DESCENTRALIZADA>>'},
+
+    # TODO: resolver convergência
+    'tem_card_esp': {'col': 'CARD_ESP', 'text': 'Sim, havendo cardápio especial para esses alunos', 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_COM_CARDAPIO>>'},
+    'tem_card_esp_irr': {'col': 'CARD_ESP', 'text': 'Sim, mas não havendo cardápio especial para esses alunos', 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_SEM_CARDAPIO>>'},
+    'nao_card_esp': {'col': 'CARD_ESP', 'text': 'Não', 'tag': '<<CARDAPIO_NEEDS_NAO>>'},
+
+
+    'ref_serv': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo SERVIDA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_SERVIDA>>'},
+    'ref_prep': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo PREPARADA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_PREPARADA>>'},
+    'ref_nao': {'col': 'REF_SERV', 'text': 'Não', 'tag': '<<CARDAPIO_VISITA_REFEICAO_NAO>>'},
+
+    # Fraldário
+    'local_dentro': {'col': 'LOCAL_FRAL', 'text': 'Implantado dentro do berçário', 'tag': '<<FRALDARIO_LOCAL_DENTRO_BERCARIO>>'},
+    'local_separado': {'col': 'LOCAL_FRAL', 'text': 'Em ambiente separado', 'tag': '<<FRALDARIO_LOCAL_SEPARADO>>'},
+
+    #Infra pátio
+    'patio_cob_exclusivo': {'col': 'PATIO', 'text': 'Sim, área COBERTA com horário de utilização EXCLUSIVO para o ensino infantil', 'tag': '<<EDUC_INF_PATIO_COBERTO_EXCLUSIVO>>'},
+    'patio_descob_exclusivo': {'col': 'PATIO', 'text': 'Sim, área DESCOBERTA com horário de utilização EXCLUSIVO para o ensino infantil', 'tag': '<<EDUC_INF_PATIO_DESCOBERTO_EXCLUSIVO>>'},
+    'patio_cob_compartilhado': {'col': 'PATIO', 'text': 'Sim, área COBERTA COMPARTILHADA no mesmo horário com outras etapas de ensino', 'tag': '<<EDUC_INF_PATIO_COBERTO_COMPART>>'},
+    'patio_descob_compartilhado': {'col': 'PATIO', 'text': 'Sim, área DESCOBERTA COMPARTILHADA no mesmo horário com outras etapas de ensino', 'tag': '<<EDUC_INF_PATIO_DESCOBERTO_COMPART>>'},
+    'nao_tem_patio':{'col':'PATIO', 'text':'Não', 'tag':'<<EDUC_INF_PATIO_NAO>>'},
+
+    #Parque Infantil
+    'parque_tem_cond':{'col':'PARQ_INF', 'text':'Sim, em condições de uso', 'tag':'<<EDUC_INF_PARQUINHO_COND_USO>>'},
+    'parque_sem_cond':{'col':'PARQ_INF', 'text':'Sim, mas sem condições de uso', 'tag':'<<EDUC_INF_PARQUINHO_SEM_COND>>'},
+    'parque_nao':{'col':'PARQ_INF', 'text':'Não', 'tag':'<<EDUC_INF_PARQUINHO_NAO>>'},
+
+    #Local Armazenamento dos gen. alimenticios
+    'local_desp':{'col':'LOC_ARM', 'text':'Em local especifico de despensa', 'tag':'<<ARMZ_LOCAL_DESPENSA>>'},
+    'local_arm_dentro':{'col':'LOC_ARM', 'text':'Em armário, dentro na cozinha', 'tag':'<<ARMZ_LOCAL_ARMARIO_DENTRO_COZINHA>>'},
+    'local_arm_fora':{'col':'LOC_ARM', 'text':'Em armário, fora do ambiente da cozinha', 'tag':'<<ARMZ_LOCAL_ARMARIO_FORA_COZINHA>>'},
+    'local_nao_ha':{'col':'LOC_ARM', 'text':'Não há local de armazenamento de gêneros alimentícios na escola', 'tag':'<<ARMZ_LOCAL_NAO_HA>>'},
+
+    #Cardápio Assinado
+    'card_ass_rt':{'col':'CARD', 'text':'Sim, assinado por Nutricionista RT e fixado em local visível', 'tag':'<<CARDAPIO_ASS_RT_E_FIXADO>>'},
+    'card_nao_ass':{'col':'CARD', 'text':'Sim, NÃO assinado por nutricionista, mas fixado em local visível', 'tag':'<<CARDAPIO_NAO_ASSINADO_MAS_FIXADO>>'},
+    'card_ass_nao_fix':{'col':'CARD', 'text':'Sim, assinado por nutricionista, mas NÃO fixado em local visível', 'tag':'<<CARDAPIO_ASSINADO_NAO_FIXADO>>'},
+    'card_nao_ass_nao_fix':{'col':'CARD', 'text':'Sim, NÃO assinado por nutricionista e NÃO fixado em local visível', 'tag':'<<CARDAPIO_NAO_ASS_NAO_FIXADO>>'},
+    'card_nao_existe':{'col':'CARD', 'text':'Não', 'tag':'<<CARDAPIO_NAO_EXISTE>>'},
+
+    #TODO: Irregularidades local de armazenamento dos alimentos
+    
+
     # ... etc
 }
 
@@ -84,10 +136,34 @@ CALCULATION_SPECS = {
 DYNAMIC_TAG_SPECS = {
     'DEP_': {'col': 'DEPENDENCIAS', 'replacements': {"_": " "}},
     'DEP_INF_': {'col': 'DEP_INF', 'replacements': {"_": " "}},
-    'NUM_ESCOLAS_INADEQ_': {'col': 'ACESSO', 'replacements': {"_": " "}},
+    'NUM_ESCOLAS_': {'col': 'ACESSO', 'replacements': {"_": " ", "INADEQ":""}},
     'COZ_INFRA_': {'col': 'IRR_COZ', 'replacements': {"VENT": "VENTILACAO", "ILUM": "ILUMINACAO", "_": " "}},
-    'SALAS_IRREGULARES_': {'col': 'SALA_IRR', 'replacements': {"_": " "}},
+    'LIXO_':{'col':'LIXO', 'replacements':{"_":" "}},
+    'ARMZ_UP':{'col':'ALM_UP', 'replacements':{"_":" ","ARMZ_UP":""}},
+    'UP_CONSUMO':{'col':'CONS_UP', 'replacements':{"_":" ","UP_CONSUMO":""}},
+    'UP_DIRETRIZ':{'col':'DIR_UP', 'replacements':{"_":" ","UP_DIRETRIZ":""}},
+    'UP_COMERCIO':{'col':'VEND_UP', 'replacements':{"_":" ","UP_COMERCIO":""}},
+    'CARDAPIO_CONFORME':{'col':'REF_CONF', 'replacements':{"_":" ","CARDAPIO_CONFORME":""}},
+    'COZ_OUTROS':{'col':'COZ_OUT', 'replacements':{"_":" ","COZ_OUTROS":""}},
+    'FRALDARIO_ITEM':{'col':'ITEM_FRAL', 'replacements':{"_":" ","FRALDARIO_ITEM":""}},
+    'FRALDARIO_INFRA':{'col':'IRR_FRAL', 'replacements':{"_":" ","FRALDARIO_INFRA":"","VENT":"VENTILAÇÃO", "ILUM":"ILUMINAÇÃO", "PROBLEMA": ""}},
+    'LACTARIO_LOCAL':{'col':'LOCAL_LACT', 'replacements':{"_":" ","LACTARIO_LOCAL":"","COZINHA":""}},
+    'LACTARIO_ITEM':{'col':'ITEM_LACT', 'replacements':{"_":" ","LACTARIO_ITEM":""}},
+    'LACTARIO_INFRA':{'col':'IRR_LACT','replacements':{"_":" ","LACTARIO_INFRA":"","AUS":"AUSENCIA","VENT":"VENTILACAO"}},
+    'ARMZ_CONGELADOS':{'col':'ALM_CONG','replacements':{"_":" ","ARMZ_CONGELADOS":""}},
+    'ARMZ_CONG_IRREG':{'col':'IRR_CONG','replacements':{"_":" ","ARMZ_CONG_IRREG":"","ENCONTRADO":""}},
+    #TODO: EI_SAN_EXC_EXISTE -> BASEADO EM DEPS
+    'EI_SAN_EXC_AGUA':{'col':'AG_SAN_EI','replacements':{"_":" ","EI_SAN_EXC_AGUA":""}},
+    'BIBLI_SL_COMP_INFRA':{'col':'IRR_BIBSL','replacements':{"_":" ","BIBLI_SL_COMP_INFRA":"","AUS":"AUSENCIA","NENHUMA":"ASPECTOS","IRREGULARES":"","IRREGULAR":"",}},
+    'BANH_GERAL_INFRA':{'col':'IRR_BAN','replacements':{"_":" ","BANH_GERAL_INFRA":"","PROBLEMA":"","AUS":"AUSENCIA","ILUM":"ILUMINACAO","VENT":"VENTILACAO"}},
+    'REFEITORIO_MOB':{'col':'MOB_REF','replacements':{"REFEITORIO_MOB":"","OK":"NAO_FORAM","SEM_ADAPT":"AUSENCIA_ADAPTACAO","_":" "}},
+    'REFEITORIO_INFRA':{'col':'IRR_REF','replacements':{"REFEITORIO_INFRA":"","ILUM":"ILUMINACAO","VENT":"VENTILACAO","OK":"NAO_FORAM","_":" "}},
+    'RESERVATORIO':{'col':'RES_AGUA','replacements':{"RESERVATORIO":"","FUNC":"FUNCIONAMENTO","OK":"EM_FUNCIONAMENTO","_":" "}},
+    'PCD_SAN_EXC_AGUA':{'col':'BAN_PCD_AG','replacements':{"PCD_SAN_EXC_AGUA":"","AGUA":"","_":" "}},
+
+    'PCD_SAN_INFRA':{'col':'IRR_BAN_PCD','replacements':{"PCD_SAN_INFRA":"","AUS":"","NENHUMA_IRREG":"NAO_FORAM","_":" "}},
     # Adicionar outras lógicas dinâmicas aqui
+    # O script ainda detecta LACTARIO_LOCAL? Vê se o _ interfere (interfere :p)
 }
 
 
@@ -181,14 +257,31 @@ def calcular_tags_para_municipio(
             if spec_key not in calc_cache:
                 spec = CALCULATION_SPECS[spec_key]
                 col, op, text = spec.get('col'), spec.get('op'), spec.get('text')
-                
                 if op == 'notna':
                     mask = df_municipio[col].notna()
+
+                elif op == 'composite':
+                    # Começamos com uma máscara que inclui todas as linhas
+                    base_mask = pd.Series([True] * len(df_municipio), index=df_municipio.index)
+                    col_norm = f"{col}_norm"
+                    conditions = spec.get('conditions', {})
+
+                    # Aplica as condições 'must_contain' (Lógica AND)
+                    for text_to_find in conditions.get('must_contain', []):
+                        base_mask &= df_municipio[col_norm].str.contains(_norm_noacc(text_to_find), na=False)
+                    
+                    # Aplica as condições 'must_not_contain' (Lógica AND NOT)
+                    for text_to_exclude in conditions.get('must_not_contain', []):
+                        # O operador ~ inverte a máscara booleana (faz um NOT)
+                        base_mask &= ~df_municipio[col_norm].str.contains(_norm_noacc(text_to_exclude), na=False)
+                    
+                    mask = base_mask
+
                 else: # 'contains' é o padrão
-                    mask = df_municipio[f"{col}_norm"].str.contains(_norm_noacc(text), na=False)
+                    mask = df_municipio[f"{col}_norm"].str.match(_norm_noacc(text), na=False)
                 calc_cache[spec_key] = mask
 
-            final_mask = calc_cache[spec_key]
+            final_mask = calc_cache[spec_key].copy()
             if rule['esfera']:
                 # ===== LINHA CORRIGIDA AQUI =====
                 final_mask &= df_municipio['ESFERA_norm'].str.contains(rule['esfera'].lower(), na=False)
@@ -231,11 +324,11 @@ def calcular_tags_para_municipio(
                 break
 
         if not found_dynamic and tag not in static_registry:
-            resultados[tag] = "0"
+            resultados[tag] = " "
 
     for tag in tags_a_calcular:
         if tag not in resultados:
-            resultados[tag] = "0"
+            resultados[tag] = " "
             
     return resultados
 
@@ -263,9 +356,12 @@ def _escrever_planilha(saida: Path, tags: List[str], municipios: List[str], resu
     for j, m in enumerate(municipios, start=start_col_data):
         ws_calc.cell(row=2, column=j, value=m)
     
-    # Escreve tags e resultados
-    for i, tag in enumerate(tags, start=3):
-        ws_calc.cell(row=i, column=1, value=tag)
+      # Escreve tags e resultados
+    for i, tag in enumerate(tags, start=4):
+        ws_calc.cell(row=i, column=1, value=tag) # Coluna A
+        for j, municipio in enumerate(municipios, start=start_col_data):
+            valor = resultados_por_municipio.get(municipio, {}).get(tag, "")
+            ws_calc.cell(row=i, column=j, value=valor)
 
     # Fórmula B3 (igual à sua)
     if tags:
@@ -307,6 +403,7 @@ def main():
         municipios_a_processar = [args.municipio]
     else:
         municipios_a_processar = sorted(df['MUNICIPIO'].dropna().unique())
+        
         print(f"Nenhum município especificado. Calculando para todos os {len(municipios_a_processar)} municípios encontrados.")
 
     # 4. Calcular para cada município
