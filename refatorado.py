@@ -32,23 +32,23 @@ COLS_AS = {
     "MOB_REF": "OW", "IRR_REF": "PB", "CONS_UP": "PG", "VEND_UP": "PL", "DIR_UP": "PR",
 }
 
-# Especificações de cálculo para tags "estáticas" (que procuram um texto fixo).
 # Formato: 'chave_interna': {'col': 'NOME_DA_COLUNA', 'text': 'TEXTO_A_PROCURAR', 'tag': '<<TAG_BASE>>'}
 CALCULATION_SPECS = {
     # Escolas Visitadas
+    # must_contain permite que a string esteja no meio de uma lista
     'todas': {'col': 'INEP', 'op': 'notna', 'tag': '<<NUMERO_ESCOLAS_VISITADAS>>'},
-    'infantil_q': {'col': 'ETAPAS', 'text': 'Educação Infantil', 'tag': '<<ESCOLAS_INFANTIL_VISITADAS>>'},
-    'infantil_creche': {'col': 'ETAPAS', 'text': 'Educação Infantil - Creche', 'tag': '<<ESCOLAS_INFANTIL_VISITADAS_CRECHE>>'},
-    'infantil_pre': {'col': 'ETAPAS', 'text': 'Educação Infantil - Pré-escola', 'tag': '<<ESCOLAS_INFANTIL_VISITADAS_PREESCOLA>>'},
-    'fund_q': {'col': 'ETAPAS', 'text': 'Fundamental', 'tag': '<<ESCOLAS_FUND_VISITADAS>>'},
-    'medio_q': {'col': 'ETAPAS', 'text': 'Ensino Médio', 'tag': '<<ESCOLAS_MED_VISITADAS>>'},
-    'eja_q': {'col': 'ETAPAS', 'text': 'EJA', 'tag': '<<ESCOLAS_EJA_VISITADAS>>'},
+    'infantil_q': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Educação Infantil']}, 'tag': '<<ESCOLAS_INFANTIL_VISITADAS>>'},
+    'infantil_creche': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Educação Infantil - Creche']}, 'tag': '<<ESCOLAS_INFANTIL_VISITADAS_CRECHE>>'},
+    'infantil_pre': {'col': 'ETAPAS','op':'composite','conditions':{'must_contain':['Educação Infantil - Pré-escola']}, 'tag': '<<ESCOLAS_INFANTIL_VISITADAS_PREESCOLA>>'},
+    'fund_q': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Fundamental']}, 'tag': '<<ESCOLAS_FUND_VISITADAS>>'},
+    'medio_q': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Ensino Médio']}, 'tag': '<<ESCOLAS_MED_VISITADAS>>'},
+    'eja_q': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['EJA']}, 'tag': '<<ESCOLAS_EJA_VISITADAS>>'},
     'inf_fund_exclusivo': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Educação Infantil', 'Fundamental'], 'must_not_contain':['Ensino Médio']},'tag':'<<ESCOLAS_INF_FUND_VISITADAS>>'},
     
     # Irregularidades Entrada
     'sem_rampas': {'col': 'IRR_ENTRADA', 'text': 'Não há rampa de acesso', 'tag': '<<ESCOLAS_SEM_RAMPAS>>'},
-    'rampas_irregulares': {'col': 'IRR_ENTRADA', 'text': 'apresenta alguma irregularidade', 'tag': '<<ESCOLAS_RAMPAS_IRREGULARES>>'},
-    'sem_vao_entrada': {'col': 'IRR_ENTRADA', 'text': 'Não há porta de entrada com largura de vão livre', 'tag': '<<ESCOLAS_VAO_ENTRADA_IRREGULAR>>'},
+    'rampas_irregulares': {'col': 'IRR_ENTRADA', 'text': 'Há rampa de acesso, mas ela apresenta alguma irregularidade', 'tag': '<<ESCOLAS_RAMPAS_IRREGULARES>>'},
+    'sem_vao_entrada': {'col': 'IRR_ENTRADA', 'text': 'Não há porta de entrada com largura de vão livre igual ou superior a 80cm', 'tag': '<<ESCOLAS_VAO_ENTRADA_IRREGULAR>>'},
 
     # Vigilância Sanitária
     'com_anvisa': {'col': 'ANVISA', 'text': 'Sim, válida', 'tag': '<<LIC_ANVISA_VALIDO>>'},
@@ -57,8 +57,8 @@ CALCULATION_SPECS = {
     'com_avcb': {'col': 'AVCB', 'text': 'Sim, válida', 'tag': '<<AVCB_VALIDO>>'},
     'avcb_fv': {'col': 'AVCB', 'text': 'fora da validade', 'tag': '<<AVCB_FORA_VAL>>'},
     'sem_avcb': {'col': 'AVCB', 'text': 'Não', 'tag': '<<AVCB_NAO>>'},
-    'dedet_dp': {'col': 'DEDET', 'text': 'há no máximo 6 meses', 'tag': '<<DEDET_ATE6M>>'},
-    'dedet_fp': {'col': 'DEDET', 'text': 'há mais de 6 meses', 'tag': '<<DEDET_MAIS6M>>'},
+    'dedet_dp': {'col': 'DEDET', 'text': 'Sim, emitido há no máximo 6 meses', 'tag': '<<DEDET_ATE6M>>'},
+    'dedet_fp': {'col': 'DEDET', 'text': 'Sim, emitido há mais de 6 meses', 'tag': '<<DEDET_MAIS6M>>'},
     'sem_dedet': {'col': 'DEDET', 'text': 'Não', 'tag': '<<DEDET_NAO>>'},
     
     # Abastecimento de Água
@@ -73,12 +73,33 @@ CALCULATION_SPECS = {
     'en_sim_fora':{'col':'ENERGIA', 'text':'Sim, mas fora de funcionamento', 'tag':'<<ENERGIA_FORA_FUNC>>'},
     'en_nao_ha':{'col':'ENERGIA', 'text':'Não', 'tag':'<<ENERGIA_NAO>>'},
 
+    #Deps (que não funcionam com tags dinamicas)
+    'dep_patio_coberto':{'col':'DEPENDENCIAS', 'op':'composite', 'conditions':{'must_contain':['Pátio coberto']}, 'tag':'<<DEP_PATIO_COBERTO>>'},
+    'dep_patio_descoberto':{'col':'DEPENDENCIAS', 'op':'composite', 'conditions':{'must_contain':['Pátio descoberto']}, 'tag':'<<DEP_PATIO_DESCOBERTO>>'},
+
+    #Deps Infantil
+    'dep_inf_san':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Sanitário exclusivo à educação infantil']}, 'tag':'<<DEP_SANITARIO_ED_INFANTIL>>'},
+    'dep_inf_san_existe':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Sanitário exclusivo à educação infantil']}, 'tag':'<<EI_SAN_EXC_EXISTE>>'}, # NÃO TENHO CERTEZA SE É ASSIM QUE SE CALCULA ESSA TAG
+    'dep_inf_berc':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Berçário']}, 'tag':'<<DEP_BERCARIO>>'},
+    'dep_inf_fral':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Fraldário']}, 'tag':'<<DEP_FRALDARIO>>'},
+    'dep_inf_lact':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Lactário']}, 'tag':'<<DEP_LACTARIO>>'},
+    'dep_inf_parq':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Parque infantil']}, 'tag':'<<DEP_PARQUE_INFANTIL>>'},
+    'dep_inf_lav':{'col':'DEP_INF', 'op':'composite','conditions':{'must_contain':['Lavanderia e/ou área de lavagem, secagem e armazenamento']}, 'tag':'<<DEP_LAVANDERIA_AREA_LAVAGEM>>'},
+    'dep_inf_parq':{'col':'DEP_INF','text':'Não', 'tag':'<<BERCARIO_LIMITE_CRIANÇAS_IRREG>>'},
+
     # Salas de Aula mult->multisseriada
     'mult_sim':{'col':'MULTS', 'text':'Sim', 'tag':'<<SALAS_MULTISSERIADAS>>'},
     'sala_irr':{'col': 'SALA_IRR', 'op':'composite','conditions':{'must_not_contain':['Não foram identificados os aspectos irregulares listados acima']},'tag':'<<SALAS_IRREGULARES>>'},
+    'sala_irr_ilum':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Ausência de iluminação natural']},'tag':'<<SALAS_IRREGULARES_ILUMINACAO>>'},
+    'sala_irr_ventilacao':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Ausência de ventilação natural']},'tag':'<<SALAS_IRREGULARES_VENTILACAO>>'},
+    'sala_irr_ventiladores':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Ausência de ventiladores e/ou ar condicionado']},'tag':'<<SALAS_IRREGULARES_VENTILADORES>>'},
+    'sala_irr_pisos':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Pisos sujos, com rachaduras, buracos e/ou falhas no revestimento']},'tag':'<<SALAS_IRREGULARES_PISO>>'},
+    'sala_irr_teto':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Teto/cobertura com rachaduras, buracos, quebra de reboco, mofo e/ou infiltrações']},'tag':'<<SALAS_IRREGULARES_TETO>>'},
+    'sala_irr_parede':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Paredes com rachaduras, buracos, quebra de reboco, mofo e/ou infiltrações']},'tag':'<<SALAS_IRREGULARES_PAREDES>>'},
+    'sala_irr_cantos':{'col': 'SALA_IRR','op':'composite','conditions':{'must_contain':['Cantos pontiagudos nos equipamentos']},'tag':'<<SALAS_IRREGULARES_CANTOS>>'},
 
     # Esgotamento
-    'sist_conectado': {'col': 'ESGOTAMENTO', 'text': 'rede de esgotamento sanitário', 'tag': '<<ESGOTO_REDE_SANITARIA>>'},
+    'sist_conectado': {'col': 'ESGOTAMENTO', 'text': 'Conexão com rede de esgotamento sanitário', 'tag': '<<ESGOTO_REDE_SANITARIA>>'},
     'fossa_e_outros': {'col': 'ESGOTAMENTO', 'text': 'Fossa, sumidouro ou similar', 'tag': '<<ESGOTO_FOSSA_SUMIDOURO>>'},
     'despejo_inadequado': {'col': 'ESGOTAMENTO', 'text': 'Despejo sem destinação adequada', 'tag': '<<ESGOTO_DESPEJO_INADEQUADO>>'},
     
@@ -98,6 +119,10 @@ CALCULATION_SPECS = {
     'ref_serv': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo SERVIDA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_SERVIDA>>'},
     'ref_prep': {'col': 'REF_SERV', 'text': 'Sim, havia refeição sendo PREPARADA', 'tag': '<<CARDAPIO_VISITA_REFEICAO_PREPARADA>>'},
     'ref_nao': {'col': 'REF_SERV', 'text': 'Não', 'tag': '<<CARDAPIO_VISITA_REFEICAO_NAO>>'},
+
+    'estoque_ing_todos': {'col': 'ING_REF', 'text': 'Sim, todos os ingredientes necessários para todas as refeições daquele dia', 'tag': '<<CARDAPIO_ESTOQUE_ING_TODOS>>'},
+    'estoque_ing_alguns': {'col': 'ING_REF', 'text': 'Sim, os ingredientes necessários para algumas das refeições daquele dia', 'tag': '<<CARDAPIO_ESTOQUE_ING_ALGUNS>>'},
+    'estoque_ing_nenhum': {'col': 'ING_REF', 'text': 'Não, nenhum dos ingredientes necessários para as refeições daquele dia', 'tag': '<<CARDAPIO_ESTOQUE_ING_NENHUM>>'},
 
     # Fraldário
     'local_dentro': {'col': 'LOCAL_FRAL', 'text': 'Implantado dentro do berçário', 'tag': '<<FRALDARIO_LOCAL_DENTRO_BERCARIO>>'},
@@ -144,6 +169,7 @@ CALCULATION_SPECS = {
 # Formato: 'PREFIXO_DA_TAG': {'col': 'NOME_DA_COLUNA', 'replacements': {'DE': 'PARA'}}
 DYNAMIC_TAG_SPECS = {
     'DEP_': {'col': 'DEPENDENCIAS', 'replacements': {"_": " "}},
+    #TODO colocar DEP_PATIO como tag estática. 
     'DEP_INF_': {'col': 'DEP_INF', 'replacements': {"_": " "}},
     'NUM_ESCOLAS_': {'col': 'ACESSO', 'replacements': {"_": " ", "INADEQ":""}},
     'COZ_INFRA_': {'col': 'IRR_COZ', 'replacements': {"VENT": "VENTILACAO", "ILUM": "ILUMINACAO", "_": " "}},
@@ -302,9 +328,10 @@ def calcular_tags_para_municipio(
         for prefix, spec in dynamic_specs.items():
             if tag.startswith(f"<<{prefix}"):
                 col_name = spec['col']
-                
+    
                 sufixo = tag.replace("<<", "").replace(">>", "").replace(prefix, "")
                 esfera = None
+
                 if sufixo.endswith("_MUN"):
                     esfera = "Municipal"
                     sufixo = sufixo[:-4]
