@@ -17,19 +17,19 @@ import operator
 # Este é o ÚNICO lugar para configurar colunas.
 COLS_AS = {
     "MUNICIPIO": "F", "INEP": "G", "ESFERA": "K", "ACESSO": "Z",
-    "ETAPAS": "AJ", "ESGOTAMENTO": "EE", "DEPENDENCIAS": "ER", "DEP_INF": "ET",
-    "IRR_ENTRADA": "AE", "GEST_ALIM": "BL", "TERC_ALIM": "BN", "ANVISA": "CK",
-    "AVCB": "CP", "DEDET": "CU", "ABS_AGUA": "CZ", "RES_AGUA": "DB",
-    "LIXO": "EK", "ENERGIA": "EP", "PATIO": "EV", "PARQ_INF": "FA",
+    "ETAPAS": "AJ","ACEI":"BR", "ESGOTAMENTO": "EE", "DEPENDENCIAS": "ER", "DEP_INF": "ET",
+    "IRR_ENTRADA": "AE", "GEST_ALIM": "BL", "TERC_ALIM": "BN","EST_CONT":"BW","EST_CONF":"CF","ANVISA": "CK",
+    "AVCB": "CP", "DEDET": "CU", "ABS_AGUA": "CZ", "RES_AGUA": "DB","CAIXA_LIMP":"DF", "CIST_LIMP":"DJ", "ORIGEM_AGUA":"DN",
+    "AGUA_CERTIF":"DS","ABAST_DESC":"DZ","AGUA_POT":"DX","LIXO": "EK", "ENERGIA": "EP", "PATIO": "EV", "PARQ_INF": "FA","BIB_SL":"FK","QUAD_FUNC":"FF",
     "IRR_BIB": "FV", "IRR_SL": "GA", "IRR_BIBSL": "GF", "AG_SAN_EI": "GN",
-    "IRR_SAN_EI": "GV", "IRR_BAN": "HK", "BAN_PCD_AG": "HV", "IRR_BAN_PCD": "ID",
-    "MULTS": "II", "SALA_IRR": "IU", "ITEM_LACT": "KE", "IRR_LACT": "KJ",
+    "IRR_SAN_EI": "GV","BG_AGUA":"HD", "IRR_BAN": "HK","SAN_PCD":"HP","BAN_PCD_AG": "HV","ITEM_PCD":"IA","IRR_BAN_PCD": "ID",
+    "MULTS": "II", "SALA_IRR": "IU","LAV_AGUA":"JT","LAV_ITEM":"JV", "LACT_AGUA":"KC","ITEM_LACT": "KE", "IRR_LACT": "KJ","BERC_ROUPA":"JJ",
     "LOCAL_LACT": "JX", "LOCAL_FRAL": "KO", "ITEM_FRAL": "KT", "IRR_FRAL": "KV",
     "EQP_COZ": "LF", "COZ_OUT": "LR", "LOC_ARM": "LW", "LIM_BERC": "JD",
-    "IRR_BER": "JL", "IRR_COZ": "LM", "ARM_IRR": "MB", "ALM_IRR": "MG",
-    "ALM_UP": "ML", "ALM_CONG": "MV", "IRR_CONG": "NA", "CARD": "NW",
+    "IRR_BER": "JL","COZ_AGUA":"LD","COZ_BALANCA":"LH", "IRR_COZ": "LM", "ARM_IRR": "MB", "ALM_IRR": "MG",
+    "ALM_UP": "ML", "ALM_CONG": "MV", "IRR_CONG": "NA", "REC_ADQ":"NM","QTD_ADQ":"NO","FALTA_MERENDA":"NQ","OFERTA_FRUTA":"NS","OFERTA_LEGUME":"NU","CARD": "NW",
     "CARD_ESP": "OB", "REF_SERV": "OG", "REF_CONF": "OM", "ING_REF": "OR",
-    "MOB_REF": "OW", "IRR_REF": "PB", "CONS_UP": "PG", "VEND_UP": "PL", "DIR_UP": "PR",
+    "MOB_REF": "OW", "IRR_REF": "PB", "CONS_UP": "PG", "VEND_UP": "PL", "DIR_UP": "PR","RISCO_GRAVE":"PX"
 }
 
 # Formato: 'chave_interna': {'col': 'NOME_DA_COLUNA', 'text': 'TEXTO_A_PROCURAR', 'tag': '<<TAG_BASE>>'}
@@ -46,9 +46,16 @@ CALCULATION_SPECS = {
     'inf_fund_exclusivo': {'col': 'ETAPAS', 'op':'composite','conditions':{'must_contain':['Educação Infantil', 'Fundamental'], 'must_not_contain':['Ensino Médio']},'tag':'<<ESCOLAS_INF_FUND_VISITADAS>>'},
     
     # Irregularidades Entrada
-    'sem_rampas': {'col': 'IRR_ENTRADA', 'text': 'Não há rampa de acesso', 'tag': '<<ESCOLAS_SEM_RAMPAS>>'},
-    'rampas_irregulares': {'col': 'IRR_ENTRADA', 'text': 'Há rampa de acesso, mas ela apresenta alguma irregularidade', 'tag': '<<ESCOLAS_RAMPAS_IRREGULARES>>'},
-    'sem_vao_entrada': {'col': 'IRR_ENTRADA', 'text': 'Não há porta de entrada com largura de vão livre igual ou superior a 80cm', 'tag': '<<ESCOLAS_VAO_ENTRADA_IRREGULAR>>'},
+    'sem_rampas': {'col': 'IRR_ENTRADA','op':'composite','conditions':{'must_contain':['Não há rampa de acesso, mesmo ela sendo necessária']}, 'tag': '<<ESCOLAS_SEM_RAMPAS>>'},
+    'rampas_irregulares': {'col': 'IRR_ENTRADA', 'op':'composite','conditions':{'must_contain':['Há rampa de acesso, mas ela apresenta alguma irregularidade']}, 'tag': '<<ESCOLAS_RAMPAS_IRREGULARES>>'},
+    'sem_vao_entrada': {'col': 'IRR_ENTRADA', 'op':'composite','conditions':{'must_contain':['Não há porta de entrada com largura de vão livre igual ou superior a 80cm']}, 'tag': '<<ESCOLAS_VAO_ENTRADA_IRREGULAR>>'},
+
+    'controle_estoque':{'col':'EST_CONT','text':'Sim','tag':'<<ESTOQUE_CONTROLE_SIM>>'},
+    'controle_estoque_nao':{'col':'EST_CONT','text':'Não','tag':'<<ESTOQUE_CONTROLE_NAO>>'},
+
+    'estoque_confirmacao_todos':{'col':'EST_CONF','text':'Sim','tag':'<<ESTOQUE_CONF_TODOS>>'},
+    'estoque_confirmacao_alguns':{'col':'EST_CONF','text':'Não, mas existe de outros gêneros alimentícios (frutas e legumes, por exemplo)','tag':'<<ESTOQUE_CONF_ALGUNS>>'},
+    'estoque_confirmacao_nenhum':{'col':'EST_CONF','text':'Não existe nota de recebimento de gêneros alimentícios na escola','tag':'<<ESTOQUE_CONF_NENHUM>>'},
 
     # Vigilância Sanitária
     'com_anvisa': {'col': 'ANVISA', 'text': 'Sim, válida', 'tag': '<<LIC_ANVISA_VALIDO>>'},
@@ -62,11 +69,11 @@ CALCULATION_SPECS = {
     'sem_dedet': {'col': 'DEDET', 'text': 'Não', 'tag': '<<DEDET_NAO>>'},
     
     # Abastecimento de Água
-    'rede_publica': {'col': 'ABS_AGUA', 'text': 'Rede Pública', 'tag': '<<AGUA_REDE_PUBLICA>>'},
-    'poco_artesiano': {'col': 'ABS_AGUA', 'text': 'Poço artesiano', 'tag': '<<AGUA_POCO_ARTESIANO>>'},
-    'cacimba_etc': {'col': 'ABS_AGUA', 'text': 'Cacimba/cisterna/poço', 'tag': '<<AGUA_CACIMBA_CISTERNA_POCO>>'},
-    'fonte_etc': {'col': 'ABS_AGUA', 'text': 'Fonte/rio/igarapé', 'tag': '<<AGUA_FONTE_RIO_IGARAPE_RIACHO_CORREGO>>'},
-    'sem_agua': {'col': 'ABS_AGUA', 'text': 'Não há', 'tag': '<<AGUA_NAO_HA>>'},
+    'rede_publica': {'col': 'ABS_AGUA','op':'composite','conditions':{'must_contain':['Rede Pública']},'tag': '<<AGUA_REDE_PUBLICA>>'},
+    'poco_artesiano': {'col': 'ABS_AGUA','op':'composite','conditions':{'must_contain':['Poço artesiano']}, 'tag': '<<AGUA_POCO_ARTESIANO>>'},
+    'cacimba_etc': {'col': 'ABS_AGUA', 'op':'composite','conditions':{'must_contain':['Cacimba/cisterna/poço']}, 'tag': '<<AGUA_CACIMBA_CISTERNA_POCO>>'},
+    'fonte_etc': {'col': 'ABS_AGUA', 'op':'composite','conditions':{'must_contain':['Fonte/rio/igarapé/riacho/córrego']}, 'tag': '<<AGUA_FONTE_RIO_IGARAPE_RIACHO_CORREGO>>'},
+    'sem_agua': {'col': 'ABS_AGUA', 'op':'composite','conditions':{'must_contain':['Não há abastecimento de água']}, 'tag': '<<AGUA_NAO_HA>>'},
 
     # Energia elétrica en->energia
     'en_sim_func':{'col':'ENERGIA', 'text':'Sim, em funcionamento', 'tag':'<<ENERGIA_SIM_FUNC>>'},
@@ -110,8 +117,10 @@ CALCULATION_SPECS = {
     'gest_alim_semi_descentralizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Semi Descentralizada ou Parcialmente Escolarizada'], 'must_not_contain':['Centralizada','Descentralizada ou Escolarizada']}, 'tag':'<<GESTAO_ALIM_SEMIDESCENTRALIZADA>>'},
     'gest_alim_terceirizada': {'col': 'GEST_ALIM', 'op':'composite','conditions':{'must_contain':['Terceirizada'], 'must_not_contain':['Centralizada','Descentralizada ou Escolarizada','Semi Descentralizada ou Parcialmente Escolarizada']}, 'tag':'<<GESTAO_ALIM_TERCEIRIZADA>>'},
 
+    'terc_alim_eqp_escola': {'col': 'TERC_ALIM', 'op':'composite','conditions':{'must_contain':['Com preparo na escola, usando equipamentos da escola']}, 'tag': '<<GESTAO_ALIM_TERCEIRIZADA_PREP_ESCOLA_EQP_ESCOLA>>'},
+    'terc_alim_eqp_empresa': {'col': 'TERC_ALIM', 'op':'composite','conditions':{'must_contain':['Com preparo na escola, usando equipamentos da empresa']}, 'tag': '<<GESTAO_ALIM_TERCEIRIZADA_PREP_ESCOLA_EQP_EMPRESA>>'},
+    'terc_alim_hotbox': {'col': 'TERC_ALIM', 'op':'composite','conditions':{'must_contain':['Com entrega em hot box']}, 'tag': '<<GESTAO_ALIM_TERCEIRIZADA_ENTREGA_HOTBOX>>'},
 
-    # TODO: resolver convergência
     'tem_card_esp': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Sim, havendo cardápio especial para esses alunos'], 'must_not_contain':['Sim, mas não havendo cardápio especial para esses alunos','Não']}, 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_COM_CARDAPIO>>'},
     'sem_card_esp': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Sim, mas não havendo cardápio especial para esses alunos'], 'must_not_contain':['Sim, havendo cardápio especial para esses alunos','Não']}, 'tag': '<<CARDAPIO_NEEDS_ESPECIAL_SEM_CARDAPIO>>'},
     'card_esp_nao': {'col': 'CARD_ESP','op':'composite','conditions':{'must_contain':['Não'], 'must_not_contain':['Sim, havendo cardápio especial para esses alunos','Sim, mas não havendo cardápio especial para esses alunos']}, 'tag': '<<CARDAPIO_NEEDS_NAO>>'},
@@ -124,9 +133,30 @@ CALCULATION_SPECS = {
     'estoque_ing_alguns': {'col': 'ING_REF', 'text': 'Sim, os ingredientes necessários para algumas das refeições daquele dia', 'tag': '<<CARDAPIO_ESTOQUE_ING_ALGUNS>>'},
     'estoque_ing_nenhum': {'col': 'ING_REF', 'text': 'Não, nenhum dos ingredientes necessários para as refeições daquele dia', 'tag': '<<CARDAPIO_ESTOQUE_ING_NENHUM>>'},
 
-    # Fraldário
+    'coz_agua_reg': {'col': 'COZ_AGUA', 'text': 'Sim', 'tag': '<<COZ_AGUA_REGULAR_SIM>>'},
+    'coz_agua_irr': {'col': 'COZ_AGUA', 'text': 'Não', 'tag': '<<COZ_AGUA_REGULAR_NAO>>'},
+    'coz_balanca': {'col': 'COZ_BALANCA', 'text': 'Sim', 'tag': '<<COZ_BALANCA_SIM>>'},
+    'coz_balanca_irr': {'col': 'COZ_BALANCA', 'text': 'Não', 'tag': '<<COZ_BALANCA_NAO>>'},
+    #Fraldário
     'local_dentro': {'col': 'LOCAL_FRAL', 'text': 'Implantado dentro do berçário', 'tag': '<<FRALDARIO_LOCAL_DENTRO_BERCARIO>>'},
     'local_separado': {'col': 'LOCAL_FRAL', 'text': 'Em ambiente separado', 'tag': '<<FRALDARIO_LOCAL_SEPARADO>>'},
+
+    #Berçário
+    'berc_roupa_cama': {'col': 'BERC_ROUPA', 'text': 'Não', 'tag': '<<BERCARIO_ROUPA_CAMA_IRREG>>'},
+
+    #Lavanderia
+    'lav_tanque': {'col': 'LAV_ITEM', 'op':'composite','conditions':{'must_contain':['Tanque']}, 'tag': '<<LAVANDERIA_TANQUE>>'},
+    'lav_maquina': {'col': 'LAV_ITEM', 'op':'composite','conditions':{'must_contain':['Máquina de lavar e/ou secar']}, 'tag': '<<LAVANDERIA_MAQUINA>>'},
+    'lav_varal': {'col': 'LAV_ITEM', 'op':'composite','conditions':{'must_contain':['Varal']}, 'tag': '<<LAVANDERIA_VARAL>>'},
+    'lav_material': {'col': 'LAV_ITEM', 'op':'composite','conditions':{'must_contain':['Material de limpeza']}, 'tag': '<<LAVANDERIA_MATERIAL>>'},
+    'lav_nenhum_item': {'col': 'LAV_ITEM', 'op':'composite','conditions':{'must_contain':['Nenhum dos itens elencados']}, 'tag': '<<LAVANDERIA_NENHUM>>'},
+    'lav_agua_sim': {'col': 'LAV_AGUA', 'text':'Sim', 'tag': '<<LAVANDERIA_AGUA_SIM>>'},
+    'lav_agua_nao': {'col': 'LAV_AGUA', 'text':'Não', 'tag': '<<LAVANDERIA_AGUA_NAO>>'},
+
+    #Lactário
+    'lact_agua_sim': {'col': 'LACT_AGUA', 'text':'Sim', 'tag': '<<LACTARIO_AGUA_SIM>>'},
+    'lact_agua_nao': {'col': 'LACT_AGUA', 'text':'Não', 'tag': '<<LACTARIO_AGUA_NAO>>'},
+
 
     #Infra pátio
     'patio_cob_exclusivo': {'col': 'PATIO', 'text': 'Sim, área COBERTA com horário de utilização EXCLUSIVO para o ensino infantil', 'tag': '<<EDUC_INF_PATIO_COBERTO_EXCLUSIVO>>'},
@@ -154,14 +184,68 @@ CALCULATION_SPECS = {
     'card_nao_existe':{'col':'CARD', 'text':'Não', 'tag':'<<CARDAPIO_NAO_EXISTE>>'},
 
     #TODO: Irregularidades local de armazenamento dos alimentos
-    'armz_irr_prat_enf':{'col':'ARM_IRR', 'text':'Prateleira(s) ou armário(s) enferrujado(s)', 'tag':'<<ARMZ_LOCAL_IRREG_PRATELEIRA_ENFERRUJADA>>'},
-    'armz_irr_sup_inap':{'col':'ARM_IRR', 'text':'Alimentos empilhados sobre superfícies não apropriadas (ex: mesas, cadeiras, balcão)', 'tag':'<<ARMZ_LOCAL_IRREG_SUPERFICIE_INAPROPRIADA>>'},
-    'armz_irr_chao':{'col':'ARM_IRR', 'text':'Armazenamento de alimentos diretamente no chão', 'tag':'<<ARMZ_LOCAL_IRREG_DIRETO_NO_CHAO>>'},
-    'armz_irr_sem_ent_ar':{'col':'ARM_IRR', 'text':'Ambiente não possui entrada de ar', 'tag':'<<ARMZ_LOCAL_IRREG_SEM_ENTRADA_AR>>'},
-    'armz_irr_pres_anim':{'col':'ARM_IRR', 'text':'Presença de animais (tais como moscas, baratas, cupins, formigas) ou vestígios de sua existência (excrementos de aves, embalagens roídas etc)', 'tag':'<<ARMZ_LOCAL_IRREG_PRESENCA_ANIMAIS>>'},
-    'armz_irr_mat_limp':{'col':'ARM_IRR', 'text':'Armazenamento de materiais de limpeza e/ou outros materiais junto de alimentos', 'tag':'<<ARMZ_LOCAL_IRREG_MATERIAIS_LIMPEZA_JUNTO>>'},
+    'armz_irr_prat_enf':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Prateleira']}, 'tag':'<<ARMZ_LOCAL_IRREG_PRATELEIRA_ENFERRUJADA>>'},
+    'armz_irr_sup':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Alimentos empilhados sobre superfícies não apropriadas']}, 'tag':'<<ARMZ_LOCAL_IRREG_SUPERFICIE_INAPROPRIADA>>'},
+    'armz_irr_chao':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Armazenamento de alimentos diretamente no chão']}, 'tag':'<<ARMZ_LOCAL_IRREG_DIRETO_NO_CHAO>>'},
+    'armz_irr_mat_limpeza':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Armazenamento de materiais de limpeza e/ou outros materiais junto de alimentos']}, 'tag':'<<ARMZ_LOCAL_IRREG_MATERIAIS_LIMPEZA_JUNTO>>'},
+    'armz_irr_ar':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Ambiente não possui entrada de ar']}, 'tag':'<<ARMZ_LOCAL_IRREG_SEM_ENTRADA_AR>>'},
+    'armz_irr_animais':{'col':'ARM_IRR', 'op':'composite','conditions':{'must_contain':['Presença de animais']}, 'tag':'<<ARMZ_LOCAL_IRREG_PRESENCA_ANIMAIS>>'},
     
+    'armz_alm_fora_val':{'col':'ALM_IRR', 'op':'composite','conditions':{'must_contain':['Alimentos fora do prazo de validade']}, 'tag':'<<ARMZ_ALIM_FORA_VALIDADE>>'},
+    'armz_alm_sem_etq':{'col':'ALM_IRR', 'op':'composite','conditions':{'must_contain':['Ausência de etiquetas de identificação de validade']}, 'tag':'<<ARMZ_ALIM_SEM_ETIQUETA_VAL>>'},
+    'armz_alm_mofados':{'col':'ALM_IRR', 'op':'composite','conditions':{'must_contain':['Alimentos visivelmente mofados ou podres']}, 'tag':'<<ARMZ_ALIM_MOFADOS_PODRES>>'},
+    'armz_alm_emb_danif':{'col':'ALM_IRR', 'op':'composite','conditions':{'must_contain':['Embalagens abertas, rasgadas ou danificadas expondo os alimentos à contaminação']}, 'tag':'<<ARMZ_ALIM_EMBALAGENS_DANIFICADAS>>'},
 
+    'doc_aceitabilidade':{'col':'ACEI', 'text':'Sim', 'tag':'<<ACEITABILIDADE_SIM>>'},
+    'doc_aceitabilidade_nao':{'col':'ACEI', 'text':'Não', 'tag':'<<ACEITABILIDADE_NAO>>'},
+
+    'quadra_func':{'col':'QUAD_FUNC', 'text':'Sim, em estado adequado de conservação e funcionamento', 'tag':'<<QUADRA_FUNC_ADEQ>>'},
+    'quadra_func_irr':{'col':'QUAD_FUNC', 'text':'Sim, mas apresenta irregularidades', 'tag':'<<QUADRA_FUNC_IRREG>>'},
+    'quadra_nao_func':{'col':'QUAD_FUNC', 'text':'Não', 'tag':'<<QUADRA_NAO_FUNC>>'},
+
+    # BG -> Banheiro Geral
+    'bg_agua_reg':{'col':'BG_AGUA', 'text':'Sim', 'tag':'<<BANH_GERAL_AGUA_REGULAR>>'},
+
+    'san_pcd_exc':{'col':'SAN_PCD', 'text':'Sim, em espaço físico EXCLUSIVO', 'tag':'<<PCD_SAN_EXCLUSIVO>>'},
+    'san_pcd_mesmo':{'col':'SAN_PCD', 'text':'Sim, no MESMO ESPAÇO físico destinado ao', 'tag':'<<PCD_SAN_MESMO_ESPACO>>'},
+    'san_pcd_inex':{'col':'SAN_PCD', 'text':'Não', 'tag':'<<PCD_SAN_INEXISTENTE>>'},
+
+    'biblioteca_exc':{'col':'BIB_SL','op':'composite','conditions':{'must_contain':['Espaço físico exclusivo para biblioteca']} , 'tag':'<<BIBLIOTECA_EXCLUSIVA>>'},
+    'sala_leitura_exc':{'col':'BIB_SL','op':'composite','conditions':{'must_contain':['Espaço físico exclusivo para sala de leitura']} , 'tag':'<<SALA_LEITURA_EXCLUSIVA>>'},
+    'bib_sl_juntos':{'col':'BIB_SL','op':'composite','conditions':{'must_contain':['Mesmo espaço físico para biblioteca e sala de leitura']} , 'tag':'<<BIBLI_SALA_MESMO_ESPACO>>'},
+
+    'limp_caixa_6m':{'col':'CAIXA_LIMP', 'text':'Sim, nos últimos 6 meses', 'tag':'<<CAIXA_LIMPEZA_6M>>'},
+    'limp_caixa_mais_6m':{'col':'CAIXA_LIMP', 'text':'Sim, há mais de 6 meses', 'tag':'<<CAIXA_LIMPEZA_MAIS_6M>>'},
+    'limp_caixa_nao':{'col':'CAIXA_LIMP', 'text':'Não', 'tag':'<<CAIXA_LIMPEZA_NAO>>'},
+
+    'limp_cisterna_6m':{'col':'CIST_LIMP', 'text':'Sim, nos últimos 6 meses', 'tag':'<<CISTERNA_LIMPEZA_6M>>'},
+    'limp_cisterna_mais_6m':{'col':'CIST_LIMP', 'text':'Sim, há mais de 6 meses', 'tag':'<<CISTERNA_LIMPEZA_MAIS_6M>>'},
+    'limp_cisterna_nao':{'col':'CIST_LIMP', 'text':'Não', 'tag':'<<CISTERNA_LIMPEZA_NAO>>'},
+
+    'agua_certif_sim':{'col':'AGUA_CERTIF', 'text':'Sim', 'tag':'<<AGUA_CERTIFICADO_SIM>>'},
+    'agua_certif_nao':{'col':'AGUA_CERTIF', 'text':'Não', 'tag':'<<AGUA_CERTIFICADO_NAO>>'},
+    
+    'agua_potavel_sim':{'col':'AGUA_POT', 'text':'Sim', 'tag':'<<AGUA_POTAVEL_DIA_SIM>>'},
+    'agua_potavel_nao':{'col':'AGUA_POT', 'text':'Não', 'tag':'<<AGUA_POTAVEL_DIA_NAO>>'},
+
+    'abastecimento_desconformidades_sim':{'col':'ABAST_DESC', 'text':'Sim', 'tag':'<<AGUA_ABAST_DESC_SIM>>'},
+    'abastecimento_desconformidades_nao':{'col':'ABAST_DESC', 'text':'Não', 'tag':'<<AGUA_ABAST_DESC_NAO>>'},
+
+    'risco_grave':{'col':'RISCO_GRAVE', 'op':'composite','conditions':{'must_contain':["Sim"]}, 'tag':'<<RISCO_GRAVE_SIM>>'},
+    'risco_grave_nao':{'col':'RISCO_GRAVE', 'text':'Não', 'tag':'<<RISCO_GRAVE_NAO>>'},
+
+    # Perguntas Direcionadas à merendeira
+    'recebimento_adequado':{'col':'REC_ADQ', 'text':'Sim', 'tag':'<<OFERTA_RECEBIMENTO_ADEQUADO_SIM>>'},
+    'recebimento_adequado_nao':{'col':'REC_ADQ', 'text':'Não', 'tag':'<<OFERTA_RECEBIMENTO_ADEQUADO_NAO>>'},
+
+    'quantidade_adequada':{'col':'QTD_ADQ', 'text':'Sim, a quantidade é adequada', 'tag':'<<OFERTA_QTD_ADEQUADA>>'},
+    'quantidade_adequada_sobras':{'col':'QTD_ADQ', 'text':'Sim, havendo ocorrência de sobras', 'tag':'<<OFERTA_QTD_SIM_SOBRAS>>'},
+    'quantidade_nao_adequada':{'col':'QTD_ADQ', 'text':'Não', 'tag':'<<OFERTA_QTD_NAO>>'},
+
+    'falta_merenda':{'col':'FALTA_MERENDA', 'text':'Sim', 'tag':'<<OFERTA_FALTA_MERENDA_SIM>>'},
+    'nao_falta_merenda':{'col':'FALTA_MERENDA', 'text':'Não', 'tag':'<<OFERTA_FALTA_MERENDA_NAO>>'},
+
+    # se der trabalho, origem de água vem aq tbm
     # ... etc
 }
 
@@ -185,10 +269,11 @@ DYNAMIC_TAG_SPECS = {
     'LACTARIO_LOCAL':{'col':'LOCAL_LACT', 'replacements':{"_":" ","LACTARIO_LOCAL":"","COZINHA":""}},
     'LACTARIO_ITEM':{'col':'ITEM_LACT', 'replacements':{"_":" ","LACTARIO_ITEM":""}},
     'LACTARIO_INFRA':{'col':'IRR_LACT','replacements':{"_":" ","LACTARIO_INFRA":"","AUS":"AUSENCIA","VENT":"VENTILACAO"}},
+    'BERCARIO_INFRA':{'col':'IRR_BER','replacements':{"_":" ","BERCARIO_INFRA":"","AUS":"AUSENCIA","VENT_NAT":"VENTILACAO_NATURAL","VENT_MEC":"VENTILADORES"}},
     'ARMZ_CONGELADOS':{'col':'ALM_CONG','replacements':{"_":" ","ARMZ_CONGELADOS":""}},
     'ARMZ_CONG_IRREG':{'col':'IRR_CONG','replacements':{"_":" ","ARMZ_CONG_IRREG":"","ENCONTRADO":""}},
-    #TODO: EI_SAN_EXC_EXISTE -> BASEADO EM DEPS
     'EI_SAN_EXC_AGUA':{'col':'AG_SAN_EI','replacements':{"_":" ","EI_SAN_EXC_AGUA":""}},
+    'EI_SAN_EXC_INFRA':{'col':'IRR_SAN_EI','replacements':{"_":" ","EI_SAN_EXC_INFRA":"","NENHUMA":"NAO","PROBLEMA":""}},
     'BIBLI_SL_COMP_INFRA':{'col':'IRR_BIBSL','replacements':{"_":" ","BIBLI_SL_COMP_INFRA":"","AUS":"AUSENCIA","NENHUMA":"ASPECTOS","IRREGULARES":"","IRREGULAR":"",}},
     'BANH_GERAL_INFRA':{'col':'IRR_BAN','replacements':{"_":" ","BANH_GERAL_INFRA":"","PROBLEMA":"","AUS":"AUSENCIA","ILUM":"ILUMINACAO","VENT":"VENTILACAO"}},
     'REFEITORIO_MOB':{'col':'MOB_REF','replacements':{"REFEITORIO_MOB":"","OK":"NAO_FORAM","SEM_ADAPT":"AUSENCIA_ADAPTACAO","_":" "}},
@@ -196,6 +281,15 @@ DYNAMIC_TAG_SPECS = {
     'RESERVATORIO':{'col':'RES_AGUA','replacements':{"RESERVATORIO":"","FUNC":"FUNCIONAMENTO","OK":"EM_FUNCIONAMENTO","_":" "}},
     'PCD_SAN_EXC_AGUA':{'col':'BAN_PCD_AG','replacements':{"PCD_SAN_EXC_AGUA":"","AGUA":"","_":" "}},
     'PCD_SAN_INFRA':{'col':'IRR_BAN_PCD','replacements':{"PCD_SAN_INFRA":"","AUS":"","NENHUMA_IRREG":"NAO_FORAM","_":" "}},
+    'BIB_EXC_INFRA':{'col':'IRR_BIB','replacements':{"BIB_EXC_INFRA":"","_":"","AUS":"AUSÊNCIA","NENHUMA":"ASPECTOS","IRREGULARES":"","IRREGULAR":""}},
+    'SL_EXC_INFRA':{'col':'IRR_SL','replacements':{"SL_EXC_INFRA":"","_":"","AUS":"AUSÊNCIA","NENHUMA":"ASPECTOS","IRREGULARES":"","IRREGULAR":""}},
+    'PCD_SAN_ACESS':{'col':'ITEM_PCD','replacements':{"PCD_SAN_ACESS":"","_":"","ESPECIAL":"","VAO":"","ANTIDERRAPANTE":"","APOIO":"","80":"","PORTA":""}},
+    'AGUA_ORIGEM':{'col':'ORIGEM_AGUA', 'replacements':{"AGUA_ORIGEM":"","_":"","REDE":"","NAO":"","FILTRO":"","FONTE":""}},
+    'OFERTA_FRUTAS':{'col':'OFERTA_FRUTA', 'replacements':{"OFERTA_FRUTAS":"","_D":""}},
+    'OFERTA_LEGUMES':{'col':'OFERTA_LEGUME', 'replacements':{"OFERTA_LEGUMES":"","_D":""}},
+
+
+
     # Adicionar outras lógicas dinâmicas aqui
     # O script ainda detecta LACTARIO_LOCAL? Vê se o _ interfere (interfere :p)
 }
