@@ -93,7 +93,7 @@ def auditar_placas_veiculos():
     # Salva o DataFrame final em um novo arquivo Excel
     try:
         df_final.to_excel(arquivo_saida, index=False)
-        print(f"\n✅ Sucesso! Auditoria concluída. O resultado foi salvo em '{arquivo_saida}'.")
+        print(f"\nSucesso! Auditoria concluída. O resultado foi salvo em '{arquivo_saida}'.")
     except Exception as e:
         print(f"\nERRO ao salvar o arquivo de resultado: {e}")
 
@@ -102,3 +102,4 @@ def auditar_placas_veiculos():
 if __name__ == "__main__":
 
     auditar_placas_veiculos()
+
