@@ -1,3 +1,5 @@
+#lembrar de fazer um arquivo .txt com as placas e uma pasta com as planilhas (cuidado com os cabeçalhos)
+
 import pandas as pd
 import os
 
@@ -98,4 +100,5 @@ def auditar_placas_veiculos():
 
 # Executa a função principal quando o script é rodado
 if __name__ == "__main__":
+
     auditar_placas_veiculos()
