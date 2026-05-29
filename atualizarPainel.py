@@ -1,10 +1,15 @@
+#pega TODAS as fotos da base e coloca no formato da planilha do painel
+
 import pandas as pd
 import openpyxl
 
+auditores_aceitos: list[str] = []
 municipios_aceitos: list[str] = []
 escolas_aceitas: list[str] = []
+inep_aceitos:list [str] = []
+questoes_aceitas:list [str] = []
+cod_questoes_aceitas:list [str] = []
 topicos_aceitos: list[str] = []
-subtopicos_aceitos: list[str] = []
 links_aceitos: list[str] = []
 
 def processar_planilha(sheets):
@@ -21,33 +26,53 @@ def processar_municipio(df,sheet):
     check_cols: list[int] = [9,12,15,18,21,24]
 
     for i in range(6):
+        auditor_values = df[df.columns[0]]
         escola_values = df[df.columns[1]]
+        cod_questao_values = df[df.columns[2]]
+        questao_values = df[df.columns[3]]
         topico_values = df[df.columns[5]]
-        subtopico_values = df[df.columns[6]]
-
         link_values = df[df.columns[link_cols[i]]]
         check_values = df[df.columns[check_cols[i]]]
 
         for index,check in enumerate(check_values):
             if check == True or check == "TRUE":
+                auditores_aceitos.append(auditor_values[index])
                 municipios_aceitos.append(sheet)
-                escolas_aceitas.append(escola_values[index])
+                escolas_aceitas.append(remover_inep(escola_values[index]))
+                inep_aceitos.append(pegar_inep(escola_values[index]))
+                cod_questoes_aceitas.append(cod_questao_values[index])
+                questoes_aceitas.append(questao_values[index])
                 topicos_aceitos.append(topico_values[index])
-                subtopicos_aceitos.append(subtopico_values[index])
                 links_aceitos.append(link_values[index])
+
+def pegar_inep(cell):
+    #evita erros com linhas vazias T .T
+    if type(cell) is str:
+        start = cell.find('(') + 1
+        end = cell.find(')', start)
+
+        if start > 0 and end > -1:
+            text = cell[start:end]
+            return text
+
+def remover_inep(cell):
+    #evita erros com linhas vazias T .T
+    if type(cell) is str:
+        text = cell.split("(")[0]
+        return text
 
 def gerar_planilha():
     # Criação da planilha
     wb = openpyxl.Workbook()
     wb.create_sheet('links_aceitos')
     wb.remove(wb['Sheet'])
-    wb['links_aceitos'].append(['Município','Unidade_Administrativa','Tópico','Subtópico','Links'])
+    wb['links_aceitos'].append(['Auditor','MUNICIPIO -  ','UNIDADE_ADMINISTRATINA -  ','SIGLA_UNIDADE_ADM -  ','Questão-Código','Questão','Tópico','Links'])
     ws = wb.active
 
-    for row in zip(municipios_aceitos,escolas_aceitas, topicos_aceitos, subtopicos_aceitos, links_aceitos):
+    for row in zip(auditores_aceitos,municipios_aceitos,escolas_aceitas, inep_aceitos, cod_questoes_aceitas,questoes_aceitas,topicos_aceitos, links_aceitos):
         ws.append(row)
 
-    wb.save("Links aceitos.xlsx")
+    wb.save("extrato_fotos.xlsx")
 
 # Função principal
 if __name__ == "__main__":
